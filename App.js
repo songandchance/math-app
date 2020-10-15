@@ -8,21 +8,39 @@ class MathApp extends React.Component {
                   second: '',
                   answer: '',
                   guess: '',
-                  operator: '',
+                  operation: '',
                   numRight: 0};
   }
 
   onClickButton = () => {
-      this.createProblem(4);
-      /*
-      this.setState({
-        numRight: 0
-      })
-      */
+    new Promise((resolve, reject) => {
+      if (document.getElementById("operator").value != null) {
+      var e = document.getElementById("operator").value;
+      }
+      resolve(e)
+    }).then(e => {
+      if (e !== this.state.operation) {
+        this.setState({
+          numRight: 0,
+          operation: e
+        });        
+      }
+      if (e === 'add') {
+        this.createAdditionProblem(9);
+      } else if (e === 'subtract') {
+        this.createSubtractionProblem(9);
+      } else if (e === 'multiply') {
+        this.createMultiplicationProblem(5);
+      } else if (e === 'divide') {
+        this.createDivisionProblem(9);
+      } else {
+        this.createAdditionProblem(4);
+      }
       document.getElementById("score").innerHTML = 'Number Right: ' + this.state.numRight;
+    })      
   }
 
-  createProblem = (max) => {
+  createAdditionProblem = (max) => {
     new Promise((resolve, reject) => {
       var problem = {};
       problem[0] = this.getRandomInt(max);
@@ -35,12 +53,70 @@ class MathApp extends React.Component {
       });
       resolve(problem)
     }).then(problem => {
-      //console.log('First : ' + this.state.first);
-      //console.log('Second: ' + this.state.second);
-      //console.log('Answer: ' + this.state.answer);
       document.getElementById("problem").innerHTML = this.state.first + " <br> + " + this.state.second;
     })
   }
+
+  createSubtractionProblem = (max) => {
+    new Promise((resolve, reject) => {
+      var problem = {};
+      problem[0] = this.getRandomInt(max);
+      problem[1] = this.getRandomInt(max);
+      while (problem[0] < problem[1]) {
+        problem[1] = this.getRandomInt(max);
+      }
+      problem[2] = problem[0] - problem[1];
+      this.setState({
+        first: problem[0],
+        second: problem[1],
+        answer: problem[2]
+      });
+      resolve(problem)
+    }).then(problem => {
+      document.getElementById("problem").innerHTML = this.state.first + " <br> - " + this.state.second;
+    })
+  } 
+
+  createMultiplicationProblem = (max) => {
+    new Promise((resolve, reject) => {
+      var problem = {};
+      problem[0] = this.getRandomInt(max);
+      problem[1] = this.getRandomInt(max);
+      problem[2] = problem[0] * problem[1];
+      this.setState({
+        first: problem[0],
+        second: problem[1],
+        answer: problem[2]
+      });
+      resolve(problem)
+    }).then(problem => {
+      document.getElementById("problem").innerHTML = this.state.first + " <br> * " + this.state.second;
+    })
+  }  
+
+  createDivisionProblem = (max) => {
+    new Promise((resolve, reject) => {
+      var problem = {};
+      problem[0] = this.getRandomInt(max) + 1;
+      problem[1] = this.getRandomInt(max);
+      while (problem[1] % problem[0] != 0 || problem[0] < problem[1]) {
+        problem[1] = this.getRandomInt(max);
+      }
+      if (problem[1] == 0) {
+        problem[1] += 1;
+      }      
+      problem[2] = problem[0] / problem[1];
+      this.setState({
+        first: problem[0],
+        second: problem[1],
+        answer: problem[2]
+      });
+      resolve(problem)
+    }).then(problem => {
+      document.getElementById("problem").innerHTML = this.state.first + " <br> ÷ " + this.state.second;
+    })
+  } 
+
   getRandomInt = (max) => {
     return Math.floor(Math.random() * Math.floor(max));
   }  
@@ -48,10 +124,8 @@ class MathApp extends React.Component {
   checkAnswer = () => {
     if (this.state.guess == this.state.answer)
     {
-      console.log(true);
       return true;
     } else {
-      console.log(false);
       return false;
     }
   }
@@ -65,37 +139,42 @@ class MathApp extends React.Component {
         resolve(userGuess);
       }).then(userGuess => {
         this.setState ({
-          guess: event.key
+          guess: this.state.guess + event.key
         })      
         document.getElementById("answer").innerHTML = this.state.guess;
-        //document.getElementById("answer").innerHTML = "<img src=\"" + window.location.origin + "/images/" + userGuess + ".png\">"; 
-        //console.log('Guess: ' + userGuess);  
       })
     }
     
-    if (event.key === 'Enter') {
+    if (event.key == 'Enter') {
       new Promise((resolve, reject) => {
         if (this.checkAnswer()) {
           this.setState({
             numRight: this.state.numRight + 1
           })
-          resolve(event);
+          
         }
+        resolve(event);
       }).then(event => {
+        this.setState({
+          guess: ''
+        })
         document.getElementById("score").innerHTML = 'Number Right: ' + this.state.numRight;
         document.getElementById("answer").innerHTML = '';
         userGuess = '';
-        console.log(this.state.numRight)
       })
     }
   };
-
 
   render() {
     return (
       <div onKeyPress={this.handleKeyPress}>
         <h1>Math!</h1>
-        
+      <select id="operator">
+        <option value="add">Add</option>
+        <option value="subtract">Subtract</option>
+        <option value="multiply">Multiply</option>
+        <option value="divide">Divide</option>
+      </select>  
       <button
         onClick={this.onClickButton}>
           Start!
