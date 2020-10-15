@@ -6,7 +6,7 @@ React app being used by my 7 year old son in his math drills.  Starting with add
  After cloning the repo (git clone https://github.com/songandchance/math-app.git):
 
  ```sh
-cd post-app
+cd my-app
 npm install
 npm start
 ```
@@ -14,7 +14,7 @@ npm start
  Then open [http://localhost:3000/](http://localhost:3000/) to see the app.<br>
 
  ```
-post-app
+my-app
 ├── README.md
 ├── node_modules
 ├── package.json
